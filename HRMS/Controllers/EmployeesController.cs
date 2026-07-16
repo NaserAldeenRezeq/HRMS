@@ -139,7 +139,7 @@ namespace HRMS.Controllers
 
         // ------------------------------------------------------------
 
-        [HttpDelete]
+        [HttpDelete("{id:long}")]
 
         public IActionResult Delete(long id)
         {

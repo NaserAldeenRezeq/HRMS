@@ -109,8 +109,9 @@ namespace HRMS.Controllers
         {
             if (id != employeeDto.Id)
             {
-                return BadRequest("Id Mismatch"); // 400
+                return BadRequest("Id Mismatch"); // 400 // 
             }
+
 
             var employee = employees.FirstOrDefault(x => x.Id == employeeDto.Id);
             if (employee == null)
@@ -138,7 +139,7 @@ namespace HRMS.Controllers
 
         // ------------------------------------------------------------
 
-        [HttpDelete("{id:long}")]
+        [HttpDelete]
 
         public IActionResult Delete(long id)
         {

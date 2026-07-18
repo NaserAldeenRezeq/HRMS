@@ -1,4 +1,7 @@
 
+using HRMS.DBContexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace HRMS
 {
     public class Program
@@ -15,6 +18,13 @@ namespace HRMS
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Container : Dependency Injection
+            builder.Services.AddDbContext<HRMSContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("HRMSContext"))
+            );
+
+
 
             var app = builder.Build();
 

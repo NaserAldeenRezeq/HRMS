@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HRMS.Models;
 using HRMS.Dtos.Employees;
+using HRMS.DBContexts;
 
 namespace HRMS.Controllers
 {
@@ -16,10 +17,14 @@ namespace HRMS.Controllers
         // U : Update
         // D : Delete
 
-        public EmployeesController()
+        // Dependency Injection
+        private readonly HRMSContext _dbContext;
+
+        public EmployeesController(HRMSContext dbContext)
         {
-            Console.WriteLine("");
+            _dbContext = dbContext;
         }
+
 
         public static List<Employee> employees = new List<Employee>()
         {
@@ -35,7 +40,9 @@ namespace HRMS.Controllers
         public IActionResult GetByCriteria([FromQuery] SearchEmployeeDto searchEmployeeDto) // Endpoint
         {
             // Query Syntax
-            var data = from emp in employees
+            var data = from emp in _dbContext.Employees
+                       from dep in _dbContext.Departments.Where(x => x.Id == emp.DepartmentId).DefaultIfEmpty() // join / inner join - left join (DefaultIf Empty)
+                       from manager in _dbContext.Employees.Where(x => x.Id == emp.ManagerId).DefaultIfEmpty()
                        where (searchEmployeeDto.Position == null || emp.Position.ToUpper().Contains(searchEmployeeDto.Position.ToUpper() )) && 
                              (searchEmployeeDto.Name == null || emp.FirstName.ToUpper().Contains(searchEmployeeDto.Name.ToUpper()))
                        orderby emp.Id descending
@@ -46,7 +53,15 @@ namespace HRMS.Controllers
                            Position = emp.Position,
                            BirthDate = emp.BirthDate,
                            StartDate = emp.StartDate, 
-                           EndDate = emp.EndDate
+                           EndDate = emp.EndDate,
+                           PhoneNumber = emp.PhoneNumber,
+                           Email = emp.Email,
+                           IsActive = emp.IsActive,
+                           Salary = emp.Salary,
+                           DepartmentId = emp.DepartmentId,
+                           DepartmentName = dep.Name,
+                           ManagerId = emp.ManagerId,
+                           ManagerName = manager.FirstName + " " + manager.LastName,
                        };
             return Ok(data);
         }
@@ -55,7 +70,7 @@ namespace HRMS.Controllers
         public IActionResult GetById(long id)
         { 
             //var data = employees.SingleOrDefault(x => x.Id == id);
-            var data = employees.Select(x => new EmployeeDto
+            var data = _dbContext.Employees.Select(x => new EmployeeDto
             {
                 Id = x.Id,
                 Name = x.FirstName + " " + x.LastName,

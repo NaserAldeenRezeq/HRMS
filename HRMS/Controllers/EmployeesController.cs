@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using HRMS.Models;
+﻿using HRMS.DBContexts;
 using HRMS.Dtos.Employees;
-using HRMS.DBContexts;
+using HRMS.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 
 namespace HRMS.Controllers
 {
@@ -35,7 +36,7 @@ namespace HRMS.Controllers
 
         };
 
-        // ------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
         [HttpGet("Criteria")] // GetByCriteria
         public IActionResult GetByCriteria([FromQuery] SearchEmployeeDto searchEmployeeDto) // Endpoint
         {
@@ -63,9 +64,9 @@ namespace HRMS.Controllers
                            ManagerId = emp.ManagerId,
                            ManagerName = manager.FirstName + " " + manager.LastName,
                        };
-            return Ok(data);
+            return Ok(data.ToList());
         }
-        // ------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
         [HttpGet("{id:long}")] // Route Parameter
         public IActionResult GetById(long id)
         { 
@@ -77,7 +78,15 @@ namespace HRMS.Controllers
                 Position = x.Position,
                 BirthDate = x.BirthDate,
                 StartDate = x.StartDate,
-                EndDate = x.EndDate
+                EndDate = x.EndDate,
+                PhoneNumber = x.PhoneNumber,
+                Email = x.Email,
+                IsActive = x.IsActive,
+                Salary = x.Salary,
+                DepartmentId = x.DepartmentId,
+                DepartmentName = "",
+                ManagerId = x.ManagerId,
+                ManagerName = "",
             }
             ).FirstOrDefault(x => x.Id == id);
             
@@ -89,7 +98,7 @@ namespace HRMS.Controllers
 
             return Ok(data);
         }
-        // ------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
 
         // Request => Body, Query Parameters
         [HttpPost]
@@ -97,7 +106,8 @@ namespace HRMS.Controllers
         {
             var employee = new Employee
             {
-                Id = (employees.LastOrDefault()?.Id ?? 0) + 1,
+                //Id = (employees.LastOrDefault()?.Id ?? 0) + 1,
+                Id = 0,
                 FirstName = employeeDto.FirstName,
                 LastName = employeeDto.LastName,
                 Position = employeeDto.Position,
@@ -108,12 +118,15 @@ namespace HRMS.Controllers
                 IsActive = employeeDto.IsActive,
                 PhoneNumber = employeeDto.PhoneNumber,
                 Salary = employeeDto.Salary,
+                DepartmentId = employeeDto.DepartmentId,
+                ManagerId = employeeDto.ManagerId,
             };
 
-            employees.Add(employee);
+            _dbContext.Employees.Add(employee);
+            _dbContext.SaveChanges();
             return Ok(employee.Id);
         }
-        // ------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
 
         // Request => Body, Query Parameters
 
@@ -128,7 +141,7 @@ namespace HRMS.Controllers
             }
 
 
-            var employee = employees.FirstOrDefault(x => x.Id == employeeDto.Id);
+            var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == employeeDto.Id);
             if (employee == null)
             {
                 return NotFound("Employee Does Not Exist");
@@ -144,6 +157,10 @@ namespace HRMS.Controllers
             employee.IsActive = employeeDto.IsActive;
             employee.PhoneNumber = employeeDto.PhoneNumber;
             employee.Salary = employeeDto.Salary;
+            employee.DepartmentId = employeeDto.DepartmentId;
+            employee.ManagerId = employeeDto.ManagerId;
+
+            _dbContext.SaveChanges();
 
             return Ok();
 
@@ -152,20 +169,21 @@ namespace HRMS.Controllers
 
         }
 
-        // ------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
 
         [HttpDelete("{id:long}")]
 
         public IActionResult Delete(long id)
         {
-            var employee = employees.FirstOrDefault(x => x.Id == id);
+            var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == id);
 
             if(employee == null)
             {
                 return NotFound("Employee Does Not Exist");
             }
 
-            employees.Remove(employee);
+            _dbContext.Employees.Remove(employee);
+            _dbContext.SaveChanges();
             return Ok();
 
 

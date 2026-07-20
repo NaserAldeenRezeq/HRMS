@@ -13,5 +13,8 @@
         public DateTime StartDate { get; set; } // Required
         public DateTime? EndDate { get; set; } // Nullable
         public decimal? Salary { get; set; } // Nullable
+
+        public long? DepartmentId { get; set; }
+        public long? ManagerId { get; set; }
     }
 }

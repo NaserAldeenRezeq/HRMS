@@ -11,7 +11,7 @@ namespace HRMS.DBContexts
             // Options
             // 1) which database? (sql server, oracle, mysql....)
             // 2) Connection String
-            // 
+            
         }
 
         // Tables => DbSet
@@ -20,6 +20,7 @@ namespace HRMS.DBContexts
 
         public DbSet<Department> Departments { get; set; }
 
+        public DbSet<Lookup> Lookups { get; set; }
 
 
     }

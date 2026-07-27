@@ -1,4 +1,5 @@
-﻿using HRMS.Dtos.Departments;
+﻿using HRMS.DBContexts;
+using HRMS.Dtos.Departments;
 using HRMS.Dtos.Employees;
 using HRMS.Models;
 using Microsoft.AspNetCore.Http;
@@ -10,16 +11,27 @@ namespace HRMS.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
+
+        
         public static List<Department> departments = new List<Department>()
         {
             new Department(){Id = 1, Name = "Human Resources", Description = "HR Department", FloorNumber = 1},
             new Department(){Id = 2, Name = "Finance", Description = "Finance Department", FloorNumber = 2},
             new Department(){Id = 3, Name = "Development", Description = "Development Department", FloorNumber = 1}
         };
+        
+
+        private readonly HRMSContext _dbContext;
+
+        public DepartmentsController(HRMSContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         [HttpGet]
         public IActionResult GetByCriteria([FromQuery] SearchDepartmentDto departmentDto) // name = Human Resources, floorNumber = 2
         {
+//            var data = from dep in _dbContext.Departments
 
             var data = from dep in departments
                        where (departmentDto.Name == null || dep.Name.ToUpper().Contains(departmentDto.Name.ToUpper())) &&
@@ -60,16 +72,21 @@ namespace HRMS.Controllers
         {
             var department = new Department
             {
-                Id = (departments.LastOrDefault()?.Id ?? 0) + 1,
+                //Id = (departments.LastOrDefault()?.Id ?? 0) + 1,
+                Id = 0,
                 Name = departmentDto.Name,
                 Description = departmentDto.Description,
                 FloorNumber = departmentDto.FloorNumber
             };
 
             departments.Add(department);
+            //_dbContext.SaveChanges();
 
             return Ok(department.Id);
         }
+
+
+
 
         [HttpPut("{id:long}")]
         public IActionResult Update(long id, [FromBody] SaveDepartmentDto departmentDto)
@@ -90,6 +107,9 @@ namespace HRMS.Controllers
             department.Description = departmentDto.Description;
             department.FloorNumber = departmentDto.FloorNumber;
 
+            
+            //_dbContext.SaveChanges();
+
             return Ok();
         }
 
@@ -104,6 +124,8 @@ namespace HRMS.Controllers
             }
 
             departments.Remove(department);
+            //_dbContext.SaveChanges();
+
             return Ok();
         }
     }

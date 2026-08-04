@@ -39,21 +39,27 @@ namespace HRMS.Controllers
         */
 
         // -------------------------------------------------------------------------------------------------
+        // =================================================================================================
+
         [HttpGet("Criteria")] // GetByCriteria
         public IActionResult GetByCriteria([FromQuery] SearchEmployeeDto searchEmployeeDto) // Endpoint
         {
+            try
+            {
             // Query Syntax
             var data = from emp in _dbContext.Employees
                        from dep in _dbContext.Departments.Where(x => x.Id == emp.DepartmentId).DefaultIfEmpty() // join / inner join - left join (DefaultIf Empty)
                        from manager in _dbContext.Employees.Where(x => x.Id == emp.ManagerId).DefaultIfEmpty()
-                       where (searchEmployeeDto.Position == null || emp.Position.ToUpper().Contains(searchEmployeeDto.Position.ToUpper() )) && 
+                       from position in _dbContext.Lookups.Where(x => x.Id == emp.PositionId).DefaultIfEmpty()
+                       where (searchEmployeeDto.PositionId == null || emp.PositionId == searchEmployeeDto.PositionId) && 
                              (searchEmployeeDto.Name == null || emp.FirstName.ToUpper().Contains(searchEmployeeDto.Name.ToUpper()))
                        orderby emp.Id descending
                        select new EmployeeDto
                        {
                            Id = emp.Id,
                            Name = emp.FirstName + " " + emp.LastName,
-                           Position = emp.Position,
+                           PositionId = emp.PositionId,
+                           PositionName = position.Name,
                            BirthDate = emp.BirthDate,
                            StartDate = emp.StartDate, 
                            EndDate = emp.EndDate,
@@ -67,42 +73,75 @@ namespace HRMS.Controllers
                            ManagerName = manager.FirstName + " " + manager.LastName,
                        };
             return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new Exception(ex.Message));
+            }
+
+
         }
         // -------------------------------------------------------------------------------------------------
+        // =================================================================================================
         [HttpGet("{id:long}")] // Route Parameter
         public IActionResult GetById(long id)
         {
-            //var data = employees.SingleOrDefault(x => x.Id == id);
-            //var data = _dbContext.Employees.Select(x => new EmployeeDto
-            //{
-            //    Id = x.Id,
-            //    Name = x.FirstName + " " + x.LastName,
-            //    Position = x.Position,
-            //    BirthDate = x.BirthDate,
-            //    StartDate = x.StartDate,
-            //    EndDate = x.EndDate,
-            //    PhoneNumber = x.PhoneNumber,
-            //    Email = x.Email,
-            //    IsActive = x.IsActive,
-            //    Salary = x.Salary,
-            //    DepartmentId = x.DepartmentId,
-            //    DepartmentName = "",
-            //    ManagerId = x.ManagerId,
-            //    ManagerName = "",
-            //}
-            //).FirstOrDefault(x => x.Id == id);
-
-
-
-            var data = _dbContext.Employees.Include(x => x.Department).Include(x => x.Manager).FirstOrDefault(x => x.Id == id);
-
-
-            if (data == null)
+            try
             {
-                return NotFound("Employee Not Found");
-            }
+                //var data = employees.SingleOrDefault(x => x.Id == id);
+                //var data = _dbContext.Employees.Select(x => new EmployeeDto
+                //{
+                //    Id = x.Id,
+                //    Name = x.FirstName + " " + x.LastName,
+                //    Position = x.Position,
+                //    BirthDate = x.BirthDate,
+                //    StartDate = x.StartDate,
+                //    EndDate = x.EndDate,
+                //    PhoneNumber = x.PhoneNumber,
+                //    Email = x.Email,
+                //    IsActive = x.IsActive,
+                //    Salary = x.Salary,
+                //    DepartmentId = x.DepartmentId,
+                //    DepartmentName = "",
+                //    ManagerId = x.ManagerId,
+                //    ManagerName = "",
+                //}
+                //).FirstOrDefault(x => x.Id == id);
 
-            return Ok(data);
+                var data = _dbContext.Employees.Select(x => new EmployeeDto
+                {
+                    Id = x.Id,
+                    Name = x.FirstName + " " + x.LastName,
+                    PositionId = x.PositionId,
+                    PositionName = x.Lookup.Name,
+                    BirthDate = x.BirthDate,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    PhoneNumber = x.PhoneNumber,
+                    Email = x.Email,
+                    IsActive = x.IsActive,
+                    Salary = x.Salary,
+                    DepartmentId = x.DepartmentId,
+                    DepartmentName = x.Department.Name,
+                    ManagerId = x.ManagerId,
+                    ManagerName = x.Manager.FirstName + " " + x.Manager.LastName,
+                }).FirstOrDefault(x => x.Id == id);
+
+
+                //var data = _dbContext.Employees.Include(x => x.Department).Include(x => x.Manager).FirstOrDefault(x => x.Id == id);
+
+
+                if (data == null)
+                {
+                    return NotFound("Employee Not Found");
+                }
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new Exception(ex.Message));
+            }
         }
 
         // Eager Loading : Include
@@ -110,34 +149,44 @@ namespace HRMS.Controllers
         // Projection : Select => Navigation Property
 
         // -------------------------------------------------------------------------------------------------
+        // =================================================================================================
 
         // Request => Body, Query Parameters
         [HttpPost]
         public IActionResult Add(SaveEmployeeDto employeeDto)
         {
-            var employee = new Employee
+            try
             {
-                //Id = (employees.LastOrDefault()?.Id ?? 0) + 1,
-                Id = 0,
-                FirstName = employeeDto.FirstName,
-                LastName = employeeDto.LastName,
-                Position = employeeDto.Position,
-                BirthDate = employeeDto.BirthDate,
-                StartDate = employeeDto.StartDate,
-                EndDate = employeeDto.EndDate,
-                Email = employeeDto.Email,
-                IsActive = employeeDto.IsActive,
-                PhoneNumber = employeeDto.PhoneNumber,
-                Salary = employeeDto.Salary,
-                DepartmentId = employeeDto.DepartmentId,
-                ManagerId = employeeDto.ManagerId,
-            };
 
-            _dbContext.Employees.Add(employee);
-            _dbContext.SaveChanges();
-            return Ok(employee.Id);
+                var employee = new Employee
+                {
+                    //Id = (employees.LastOrDefault()?.Id ?? 0) + 1,
+                    Id = 0,
+                    FirstName = employeeDto.FirstName,
+                    LastName = employeeDto.LastName,
+                    PositionId = employeeDto.PositionId,
+                    BirthDate = employeeDto.BirthDate,
+                    StartDate = employeeDto.StartDate,
+                    EndDate = employeeDto.EndDate,
+                    Email = employeeDto.Email,
+                    IsActive = employeeDto.IsActive,
+                    PhoneNumber = employeeDto.PhoneNumber,
+                    Salary = employeeDto.Salary,
+                    DepartmentId = employeeDto.DepartmentId,
+                    ManagerId = employeeDto.ManagerId,
+                };
+
+                _dbContext.Employees.Add(employee);
+                _dbContext.SaveChanges();
+                return Ok(employee.Id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new Exception(ex.Message));
+            }
         }
         // -------------------------------------------------------------------------------------------------
+        // =================================================================================================
 
         // Request => Body, Query Parameters
 
@@ -146,64 +195,76 @@ namespace HRMS.Controllers
         [HttpPut("{id:long}")] // Resource Update  (Modify the entire object)
         public IActionResult Update(long id, [FromBody] SaveEmployeeDto employeeDto)
         {
-            if (id != employeeDto.Id)
+
+
+            try
             {
-                return BadRequest("Id Mismatch"); // 400 // 
+                if (id != employeeDto.Id)
+                {
+                    return BadRequest("Id Mismatch"); // 400 // 
+                }
+
+                var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == employeeDto.Id);
+
+                if (employee == null)
+                {
+                    return NotFound("Employee Does Not Exist");
+                }
+
+
+                employee.FirstName = employeeDto.FirstName;
+                employee.LastName = employeeDto.LastName;
+                employee.PositionId = employeeDto.PositionId;
+                employee.BirthDate = employeeDto.BirthDate;
+                employee.StartDate = employeeDto.StartDate;
+                employee.EndDate = employeeDto.EndDate;
+                employee.Email = employeeDto.Email;
+                employee.IsActive = employeeDto.IsActive;
+                employee.PhoneNumber = employeeDto.PhoneNumber;
+                employee.Salary = employeeDto.Salary;
+                employee.DepartmentId = employeeDto.DepartmentId;
+                employee.ManagerId = employeeDto.ManagerId;
+
+                _dbContext.SaveChanges();
+
+                return Ok();
             }
-
-
-            var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == employeeDto.Id);
-            if (employee == null)
+            catch (Exception ex)
             {
-                return NotFound("Employee Does Not Exist");
+                return StatusCode(500, new Exception(ex.Message));
             }
-
-            employee.FirstName = employeeDto.FirstName;
-            employee.LastName = employeeDto.LastName;
-            employee.Position = employeeDto.Position;
-            employee.BirthDate = employeeDto.BirthDate;
-            employee.StartDate = employeeDto.StartDate;
-            employee.EndDate = employeeDto.EndDate;
-            employee.Email = employeeDto.Email;
-            employee.IsActive = employeeDto.IsActive;
-            employee.PhoneNumber = employeeDto.PhoneNumber;
-            employee.Salary = employeeDto.Salary;
-            employee.DepartmentId = employeeDto.DepartmentId;
-            employee.ManagerId = employeeDto.ManagerId;
-
-            _dbContext.SaveChanges();
-
-            return Ok();
-
-
-
 
         }
 
         // -------------------------------------------------------------------------------------------------
+        // =================================================================================================
 
         [HttpDelete("{id:long}")]
 
         public IActionResult Delete(long id)
         {
-            var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == id);
 
-            if(employee == null)
+            try 
             {
-                return NotFound("Employee Does Not Exist");
-            }
+                var employee = _dbContext.Employees.FirstOrDefault(x => x.Id == id);
 
-            _dbContext.Employees.Remove(employee);
-            _dbContext.SaveChanges();
-            return Ok();
+                if(employee == null)
+                {
+                    return NotFound("Employee Does Not Exist");
+                }
+
+                _dbContext.Employees.Remove(employee);
+                _dbContext.SaveChanges();
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new Exception(ex.Message));
+            }
 
 
         }
-
-
-
-
-
 
 
     }

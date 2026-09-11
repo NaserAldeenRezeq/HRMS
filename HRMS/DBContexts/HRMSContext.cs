@@ -35,6 +35,14 @@ namespace HRMS.DBContexts
                     new Lookup { Id = 8, MajorCode = 1, MinorCode = 3, Name = "Technical" }
                 );
 
+            // Seeding Admin
+
+            // BCrypt.Net.BCrypt.HashPassword("Admin@123") => $2a$11$lMJyM1RLnNfCKhRwCzelQe9EZ6jXR4YgjlJByPmhNKXvTxouSOmeu
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "Admin", IsAdmin = true, HashedPassword = "$2a$11$lMJyM1RLnNfCKhRwCzelQe9EZ6jXR4YgjlJByPmhNKXvTxouSOmeu" }
+                );
+
+
         
         }
 
@@ -48,6 +56,8 @@ namespace HRMS.DBContexts
         public DbSet<Department> Departments { get; set; }
 
         public DbSet<Lookup> Lookups { get; set; }
+
+        public DbSet<User> Users { get; set; } 
 
 
     }

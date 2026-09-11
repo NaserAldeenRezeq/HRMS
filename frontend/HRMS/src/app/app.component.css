@@ -1,0 +1,14 @@
+.title{
+  font-size: 20px;
+  font-weight: 600;
+}
+.passed{
+  color: white;
+  background-color: green;
+}
+.failed{
+  color: white;
+  background-color: red;
+}
+
+

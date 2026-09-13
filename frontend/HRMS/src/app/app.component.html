@@ -15,35 +15,99 @@
   1 + 2 = {{ 1 + 2 }}
 </div> -->
 
+<!--* -------------------------------------------------------------------------------------------------- -->
+
 <!--! (Ctrl + k) + s -->
 
 <!--! Structural Directives : NgIf, NgFor, NgSwitch -->
 <!--! Attribute Directives : NgClass, NgStyle, NgModel -->
+<!--! Custom Directives -->
 
-<h2>Before Angular 17</h2>
+
+<!--? The Old Method  -->
+<!-- <h2>Before Angular 17</h2>
+
 <div *ngFor="let stu of students; index as i" class="title">
   <span style="margin-right: 5px;">{{i + 1}}.</span>
   <span style="margin-right: 5px;" [ngClass]="{'passed': stu.mark > 50, 'failed': stu.mark <= 50}">{{stu.name}}</span>
   <span style="margin-right: 5px;" [ngStyle]="{'color': stu.mark > 50 ? 'green' : 'red' }">{{stu.mark}}%</span>
   <span *ngIf="stu.mark > 50">passed</span>
   <span *ngIf="stu.mark <= 50">Failed</span>
-</div>
+</div> -->
+
 
 <br>
-<!-- ---------------------------------------- -->
+<!--? ---------------------------------------- -->
 <br>
 
-<h2>After Angular 17</h2>
+<!--! Template Syntax  -->
+
+
+<!--? The New Method  -->
+<!-- <h2>After Angular 17</h2>
 
 @for(stu of students; track stu.id; let i = $index)
 {
 <div class="title">
   <span style="margin-right: 5px;">{{i + 1}}.</span>
-  <span style="margin-right: 5px;">{{stu.name}}</span>
-  <span style="margin-right: 5px;">{{stu.mark}}%</span>
+  <span style="margin-right: 5px;" [class] = "stu.mark > 50 ? 'passed' : 'failed'">{{stu.name}}</span>
+  <span style="margin-right: 5px;" [style.color] = "stu.mark > 50 ? 'green' : 'red'">{{stu.mark}}%</span>
   @if (stu.mark > 50)
   {<span>passed</span>}
   @else
   {<span>Failed</span>}
 </div>
-}
+} -->
+
+<!--* -------------------------------------------------------------------------------------------------- -->
+
+
+<!--! Data Binding -->
+<!--! input[] ts => html -->
+<!--! output() html => ts -->
+
+<!--? One Way Data Binding -->
+
+<!--
+
+<div style="margin: 40px;">
+
+  <img [src] = "images[currentIndex]" alt="random-image" width="50%" height="50%" id="image">
+  <br>
+
+  <button type="button" id="previous" [disabled]="currentIndex == 0" (click)="previous()">Previous</button>
+  <button type="button" id="next" [disabled]="currentIndex == images.length - 1" (click)="next()">Next</button>
+
+</div>
+
+-->
+
+
+
+<!--? Two Way Data Binding -->
+
+<!--! NgModel  -->
+
+<!--
+<div style="margin: 40px;">
+  <input type="text" [(ngModel)]="name">
+</div>
+
+
+<p class="title">
+  {{name}}
+</p>
+
+ -->
+<!--* --------------------------- -->
+<!--! Form Control  -->
+
+ <div style="margin: 40px;">
+  <form action="" [formGroup]="form">
+    <input type="text" formControlName="name">
+  </form>
+</div>
+
+<p class="title">
+  {{form.value.name}}
+</p>

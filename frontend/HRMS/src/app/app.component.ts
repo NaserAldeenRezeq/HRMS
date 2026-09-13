@@ -1,10 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgIf, NgFor, NgClass, NgStyle } from '@angular/common'
+import { FormsModule, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 // Decorator
 @Component({
-  imports: [RouterOutlet, NgIf, NgFor, NgClass, NgStyle],
+  //! component, directive, module, pipe
+  imports: [RouterOutlet, NgIf, NgFor, NgClass, NgStyle, FormsModule, ReactiveFormsModule],
   selector: 'app-root',
   styleUrl: './app.component.css',
   templateUrl: './app.component.html',
@@ -27,6 +29,37 @@ export class App {
     {id:4, name: "stu5", mark : 72},
     {id:5, name: "stu6", mark : 81}
   ];
+
+  images = [
+    "https://cdn.al-ain.com/images/2023/12/13/122-192921-best-ten-stadiums-camp-nou-bernabeu_700x400.jpg",
+    "https://cdn.al-ain.com/lg/images/2023/12/13/122-192922-best-ten-stadiums-camp-nou-bernabeu-2.png",
+    "https://cdn.al-ain.com/lg/images/2023/12/13/122-192922-best-ten-stadiums-camp-nou-bernabeu-3.png",
+    "https://cdn.al-ain.com/lg/images/2023/12/13/122-192923-best-ten-stadiums-camp-nou-bernabeu-6.png",
+    "https://cdn.al-ain.com/lg/images/2023/12/13/122-192923-best-ten-stadiums-camp-nou-bernabeu-5.png"
+  ];
+
+  currentIndex: number = 0; //* Global Variable
+
+  name : string = "employee";
+
+  form = new FormGroup({
+    // Form Controls
+    name: new FormControl("Employee")
+  });
+
+  next(){
+    if(this.currentIndex < this.images.length - 1){
+      this.currentIndex++;
+    }
+  }
+
+  previous(){
+    if(this.currentIndex > 0){
+      this.currentIndex--;
+    }
+  }
+
+
 
   temp(x : number , y : string) : number
   {

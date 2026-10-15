@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NgIf, NgFor, NgClass, NgStyle } from '@angular/common'
+import { NgIf, NgFor, NgClass, NgStyle } from '@angular/common';
 import { FormsModule, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 // Decorator
@@ -14,7 +14,7 @@ import { FormsModule, FormGroup, FormControl, ReactiveFormsModule } from '@angul
 
 
 export class App {
-  // protected readonly title = signal('HRMS');
+  // protected readonly title = signal('HRMS');*
   title: string = "Welcome to Angular from Typescript";
   number: number = 55.2245;
   bool: boolean = true;
@@ -38,14 +38,10 @@ export class App {
     "https://cdn.al-ain.com/lg/images/2023/12/13/122-192923-best-ten-stadiums-camp-nou-bernabeu-5.png"
   ];
 
+
   currentIndex: number = 0; //* Global Variable
 
-  name : string = "employee";
 
-  form = new FormGroup({
-    // Form Controls
-    name: new FormControl("Employee")
-  });
 
   next(){
     if(this.currentIndex < this.images.length - 1){
@@ -60,10 +56,19 @@ export class App {
   }
 
 
+  name : string = "employee";
 
+  form = new FormGroup({
+    // Form Controls
+    name: new FormControl("Employee")
+  });
+
+
+
+//! ---------------------------------------------------------
   temp(x : number , y : string) : number
   {
-    let num : number;
+    let num : number; //* Local Variable
     num = 15;
     return num;
   }

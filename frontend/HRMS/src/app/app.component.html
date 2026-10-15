@@ -1,3 +1,7 @@
+<!--? {{}} We call it interpolation -->
+<!--? [ ] We call it property binding -->
+
+
 <!-- <div class="title">
   title : {{ title }}
 </div>
@@ -66,13 +70,15 @@
 <!--! input[] ts => html -->
 <!--! output() html => ts -->
 
+
+
 <!--? One Way Data Binding -->
 
-<!--
 
+<!--
 <div style="margin: 40px;">
 
-  <img [src] = "images[currentIndex]" alt="random-image" width="50%" height="50%" id="image">
+  <img [src] = "images[currentIndex]" alt="random-image" width="500px" height="300px" id="image">
   <br>
 
   <button type="button" id="previous" [disabled]="currentIndex == 0" (click)="previous()">Previous</button>
@@ -80,7 +86,7 @@
 
 </div>
 
--->
+  -->
 
 
 
@@ -88,19 +94,18 @@
 
 <!--! NgModel  -->
 
-<!--
-<div style="margin: 40px;">
+
+<!-- <div style="margin: 40px;">
   <input type="text" [(ngModel)]="name">
 </div>
-
 
 <p class="title">
   {{name}}
 </p>
-
  -->
-<!--* --------------------------- -->
+
 <!--! Form Control  -->
+
 
  <div style="margin: 40px;">
   <form action="" [formGroup]="form">
@@ -111,3 +116,4 @@
 <p class="title">
   {{form.value.name}}
 </p>
+
